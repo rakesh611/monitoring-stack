@@ -19,11 +19,14 @@ data:
                 - alertmanager.monitoring.svc.cluster.local:9093
 
     scrape_configs:
+
+      # 1️⃣ Prometheus self-scrape
       - job_name: 'prometheus'
         static_configs:
           - targets: ['localhost:9090']
 
-      - job_name: 'node-exporter'
+      # 2️⃣ Node Exporter – In-cluster via Kubernetes service discovery
+      - job_name: 'node-exporter-incluster'
         kubernetes_sd_configs:
           - role: endpoints
             namespaces:
@@ -35,4 +38,20 @@ data:
           - source_labels: [__meta_kubernetes_endpoint_port_name]
             regex: metrics
             action: keep
+
+      # 3️⃣ Node Exporter – External via NodePort
+      - job_name: 'node-exporter-external'
+        static_configs:
+          - targets:
+              - 192.168.122.21:30087
+              - 192.168.122.22:30087
+              - 192.168.122.20:30087
+
+      # 4️⃣ Node Exporter – Direct hostNetwork scraping
+      - job_name: 'node-exporter-hostnetwork'
+        static_configs:
+          - targets:
+              - 192.168.122.20:9100
+              - 192.168.122.21:9100
+              - 192.168.122.22:9100
 
