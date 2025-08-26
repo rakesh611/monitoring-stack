@@ -21,7 +21,7 @@ spec:
                   - key: role
                     operator: In
                     values:
-                      - monitoring    # Must match node label
+                      - kubeworker2.lab.example.com  # Must match node label
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 1
               preference:
