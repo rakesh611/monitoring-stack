@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-sidecar
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana-sidecar
+  template:
+    metadata:
+      labels:
+        app: grafana-sidecar
+    spec:
+      containers:
+        - name: sidecar
+          image: kiwigrid/k8s-sidecar:1.27.6
+          env:
+            - name: LABEL
+              value: grafana_dashboard
+            - name: FOLDER
+              value: /var/lib/grafana/dashboards
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/lib/grafana/dashboards
+      volumes:
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+
