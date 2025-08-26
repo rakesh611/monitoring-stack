@@ -14,6 +14,23 @@ spec:
         app: prometheus
     spec:
       serviceAccountName: prometheus
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - kubeworker2.lab.example.com    # Replace with your node name
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: dedicated
+                    operator: In
+                    values:
+                      - monitoring
       containers:
         - name: prometheus
           image: prom/prometheus:v2.53.0
@@ -41,4 +58,3 @@ spec:
         - name: prometheus-storage
           persistentVolumeClaim:
             claimName: prometheus-pvc
-
